@@ -1,0 +1,56 @@
+http://dbpedia.org/resource/Huawei_P9
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://www.w3.org/2002/07/owl#Thing')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/ontology/Device')
+('http://purl.org/dc/terms/subject', 'http://dbpedia.org/resource/Category:Smartphones')
+
+http://dbpedia.org/resource/Game_Gear
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/class/yago/Whole100003553')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/ontology/InformationAppliance')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/class/yago/PhysicalEntity100001930')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/class/yago/Object100002684')
+
+http://dbpedia.org/resource/Springfield_model_1880
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://www.w3.org/2002/07/owl#Thing')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/ontology/Device')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/class/yago/Whole100003553')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://www.wikidata.org/entity/Q728')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/class/yago/Instrument103574816')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/class/yago/Object100002684')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://schema.org/Product')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/class/yago/Instrumentality103575240')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/class/yago/Weapon104565375')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/ontology/Weapon')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/class/yago/Artifact100021939')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/class/yago/PhysicalEntity100001930')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/class/yago/Device103183080')
+
+http://dbpedia.org/resource/AMT_Skipper
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://www.w3.org/2002/07/owl#Thing')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/ontology/Device')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/class/yago/Whole100003553')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://www.wikidata.org/entity/Q728')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/class/yago/Instrument103574816')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/class/yago/Object100002684')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://schema.org/Product')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/class/yago/Instrumentality103575240')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/class/yago/Weapon104565375')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/ontology/Weapon')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/class/yago/Artifact100021939')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/class/yago/PhysicalEntity100001930')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/class/yago/Device103183080')
+
+http://dbpedia.org/resource/MBT_LAW
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://schema.org/Product')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://www.wikidata.org/entity/Q728')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/class/yago/Whole100003553')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/class/yago/Object100002684')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/class/yago/Device103183080')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/ontology/Weapon')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/class/yago/Artifact100021939')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/class/yago/PhysicalEntity100001930')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/class/yago/Instrument103574816')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/ontology/Device')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/class/yago/Weapon104565375')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/class/yago/Instrumentality103575240')
+('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://www.w3.org/2002/07/owl#Thing')
+

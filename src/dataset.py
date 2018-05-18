@@ -1,16 +1,14 @@
 # !/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 import logging
 import pprint
 
 from SPARQLWrapper import SPARQLWrapper, JSON
 
-"""
-    
-"""
+__author__ = "Sephirothxlx"
 
-__author__ = "freemso"
-
+#Some configurations for DBPEDIA
 DBPEDIA_ENDPOINT = "http://dbpedia.org/sparql"
 DBPEDIA_PREFIX = """
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
@@ -28,6 +26,17 @@ PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX dbo: <http://dbpedia.org/ontology/>
 """
 
+def __execute_sparql(endpoint, sql):
+    """
+    Get the query results by SPARQL.
+    :param endpoint: dataset's address
+    :param sql: SPARQL query
+    :return: <list> of entity
+    """
+    sparql = SPARQLWrapper(endpoint)
+    sparql.setQuery(DBPEDIA_PREFIX + sql)
+    sparql.setReturnFormat(JSON)
+    return sparql.query().convert()
 
 def get_categories(entity_id):
     """
@@ -82,53 +91,25 @@ def get_types(entity_id):
     results = __execute_sparql(DBPEDIA_ENDPOINT, dbpedia_sql)["results"]["bindings"]
     return [result["type"]["value"] for result in results]
 
-
-def get_pv_pairs(entity_id):
+def get_super_classes(class_id):
     """
-    Get property-value pairs of the target entity from YAGO and DB-pedia.
-    :param entity_id: universal identifier of the entity
-    :return: <list> of (property, value)
-    """
-    dbpedia_sql = """
-        SELECT DISTINCT ?p ?o
-        WHERE {
-            <%s> ?p ?o
-        }
-        ORDER BY ?p
-    """ % entity_id
-    results = __execute_sparql(DBPEDIA_ENDPOINT, dbpedia_sql)["results"]["bindings"]
-    return [(result["p"]["value"], result["o"]["value"]) for result in results]
-
-
-def get_csks(entity_id):
-    """
-    Get common sense knowledge from ConceptNet.
-    :param entity_id: universal identifier of the entity
-    :return: <list> of (property, value)
-    """
-    # TODO
-    return []
-
-
-def is_multi_valued(property_id):
-    """
-    Check if the property is multi-valued.
-    Calculate all predicates of <SPO> in DB-pedia, those objectives values of
-    predicates that occur more than once are treated as multi-value attributes.
-    :return: <bool>
+    Get the super classes of the dbpedia class
+    :param class_id: uuid the class
+    :return: <list> of super classes
     """
     dbpedia_sql = """
-        SELECT ?s ?o1 ?o2
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX classes: <http://dbpedia.org/resource/classes#>
+        SELECT DISTINCT ?o
+        FROM NAMED classes:
         WHERE {
-            ?s  %s ?o1 .
-            ?s  %s ?o2 .
-            FILTER (?o1 != ?o2)
+            GRAPH classes: {
+                <%s> rdfs:subClassOf ?o
+            }
         }
-        LIMIT 1
-    """ % (property_id, property_id)
+    """ % class_id
     results = __execute_sparql(DBPEDIA_ENDPOINT, dbpedia_sql)["results"]["bindings"]
-    return len(results) > 0
-
+    return [result["o"]["value"] for result in results]
 
 def get_type_members(type_id):
     """
@@ -152,6 +133,112 @@ def get_type_members(type_id):
     results = __execute_sparql(DBPEDIA_ENDPOINT, dbpedia_sql)["results"]["bindings"]
     return [result["subject"]["value"] for result in results]
 
+def get_category_member(category_id):
+    """
+    Get entities whose categories contain <category_id>
+    :param category_id: uuid of the category
+    :return: <list> of entity
+    """
+    dbpedia_sql = """
+        SELECT DISTINCT ?subject
+        WHERE {
+            {?subject dct:subject <%s>}
+            UNION
+            {?subject dbo:category <%s>}
+        }
+    """ % (category_id, category_id)
+    results = __execute_sparql(DBPEDIA_ENDPOINT, dbpedia_sql)["results"]["bindings"]
+    return [result["subject"]["value"] for result in results]
+
+def get_pv_pairs(entity_id):
+    """
+    Get property-value pairs of the target entity from YAGO and DB-pedia.
+    :param entity_id: universal identifier of the entity
+    :return: <list> of (property, value)
+    """
+    dbpedia_sql = """
+        SELECT DISTINCT ?p ?o
+        WHERE {
+            {<%s> ?p ?o}
+            FILTER (?p != <http://dbpedia.org/ontology/wikiPageID>)
+            FILTER (?p != <http://dbpedia.org/ontology/wikiPageRevisionID>)
+            FILTER (?p != <http://dbpedia.org/ontology/wikiPageWikiLink>)
+            FILTER (?p != <http://dbpedia.org/ontology/wikiPageExternalLink>)
+
+        }
+        ORDER BY ?p
+    """ % entity_id
+    results = __execute_sparql(DBPEDIA_ENDPOINT, dbpedia_sql)["results"]["bindings"]
+    return [(result["p"]["value"], result["o"]["value"]) for result in results]
+
+def is_multi_valued(property_id, target_node):
+    """
+    Check if the property is multi-valued.
+    Calculate all predicates of <SPO> in DB-pedia, those objectives values of
+    predicates that occur more than once are treated as multi-value attributes.
+    :return: <bool>
+    """
+    p = property_id.lstrip('\'').rstrip('\'')
+
+    ss = ""
+    for x in target_node.categories:
+        if x.uuid !="":
+            ss += "{?s dct:subject " + "<" + x.uuid.rstrip("\n") + ">} UNION"
+    ss = ss.rstrip("UNION")
+
+    dbpedia_sql = """
+    SELECT COUNT(DISTINCT ?s) AS ?n
+    WHERE {
+        ?s  <%s> ?o1 .
+        {
+            %s
+        }
+    }
+    """ % (p, ss)
+
+    results = __execute_sparql(DBPEDIA_ENDPOINT, dbpedia_sql)["results"]["bindings"]
+    total = int(results[0]["n"]["value"])
+
+    dbpedia_sql = """
+    SELECT COUNT(DISTINCT ?s) AS ?n
+    WHERE {
+        ?s  <%s> ?o1 .
+        ?s  <%s> ?o2 .
+        FILTER (?o1 != ?o2)
+        {
+            %s
+        }
+    }
+    """ % (p, p, ss)
+    results = __execute_sparql(DBPEDIA_ENDPOINT, dbpedia_sql)["results"]["bindings"]
+    multi = int(results[0]["n"]["value"])
+
+    single = total - multi
+    if single >= multi:
+        return False
+    else:
+        return True
+
+def has_pv_pair(subject_id, property_id, value_id):
+    """
+    Check if there is such a triple
+    :param subject_id: uuid of the subject
+    :param property_id: uuid of the property
+    :parem value_id: uuid of the value
+    :return: True of False
+    """
+    dbpedia_sql = """
+        SELECT COUNT(DISTINCT ?s) AS ?n
+        WHERE {
+            ?s <%s> <%s>
+            FILTER (?s = <%s>)
+        }
+    """ % (property_id, value_id, subject_id)
+    results = __execute_sparql(DBPEDIA_ENDPOINT, dbpedia_sql)["results"]["bindings"]
+    if int(results[0]["n"]["value"]) == 1:
+        return True
+    else:
+        return False
 
 def get_resource_name(resource_id):
     """
@@ -174,35 +261,16 @@ def get_resource_name(resource_id):
     else:
         return resource_id.rsplit("/", 1)[-1]
 
-
-def get_super_classes(class_id):
+def get_csks(entity_id):
     """
-    Get the super classes of the dbpedia class
-    :param class_id: uuid the class
-    :return: <list> of super classes
+    Get common sense knowledge from ConceptNet.
+    :param entity_id: universal identifier of the entity
+    :return: <list> of (property, value)
     """
-    dbpedia_sql = """
-        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-        PREFIX classes: <http://dbpedia.org/resource/classes#>
-        SELECT DISTINCT ?o
-        FROM NAMED classes:
-        WHERE {
-            GRAPH classes: {
-                <%s> rdfs:subClassOf ?o
-            }
-        }
-    """ % class_id
-    results = __execute_sparql(DBPEDIA_ENDPOINT, dbpedia_sql)["results"]["bindings"]
-    return [result["o"]["value"] for result in results]
+    # TODO
+    return []
 
-
-def __execute_sparql(endpoint, sql):
-    sparql = SPARQLWrapper(endpoint)
-    sparql.setQuery(DBPEDIA_PREFIX + sql)
-    sparql.setReturnFormat(JSON)
-    return sparql.query().convert()
-
-
+# This main function is just for function tests.
 if __name__ == "__main__":
     logging.basicConfig(format="%(asctime)s: %(levelname)s: %(message)s")
     logging.root.setLevel(level=logging.DEBUG)
@@ -225,23 +293,6 @@ if __name__ == "__main__":
         test_entity_id,
         pprint.pformat(test_entity_types),
         len(test_entity_types)
-    ))
-    
-    #Test is_multi_valued()
-    test_property_id_1 = "dbo:wikiPageID"
-    test_property_id_2 = "dbo:abstract"
-    test_property_id_3 = "foaf:gender"
-    logging.debug("{} is multi-valued? {}".format(
-        test_property_id_1,
-        is_multi_valued(test_property_id_1)
-    ))
-    logging.debug("{} is multi-valued? {}".format(
-        test_property_id_2,
-        is_multi_valued(test_property_id_2)
-    ))
-    logging.debug("{} is multi-valued? {}".format(
-        test_property_id_3,
-        is_multi_valued(test_property_id_3)
     ))
     
     # Test get_type_members()
